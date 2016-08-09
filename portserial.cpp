@@ -36,7 +36,8 @@ static void prvvUARTRxISR( void );
 static void prvvUARTISR( void );
 
 /* ----------------------- System Variables ---------------------------------*/
-Serial pc(USBTX, USBRX);            // Cam - mbed USB serial port
+//Serial pc(USBTX, USBRX);            // Cam - mbed USB serial port
+Serial pc(PG_2, PG_1);            // Cam - mbed USB serial port
 
 Ticker simISR;                      // Cam - mbed ticker
                                     // we don't have the TX buff empty interrupt, so
@@ -55,11 +56,15 @@ prvvUARTISR( void )
 {
     if (TxEnable)
         if(pc.writeable())
+        {
             prvvUARTTxReadyISR();
+        }
             
     if (RxEnable)
         if(pc.readable())
+        {
             prvvUARTRxISR();          
+        }           
 }
 
 void
@@ -72,14 +77,32 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
     TxEnable = xTxEnable;
 }
 
+
+#if 1
+/* ----------------------- Start implementation -----------------------------*/
 BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
-    simISR.attach_us(&prvvUARTISR,1000);    // Cam - attach prvvUARTISR to a 1mS ticker to simulate serial interrupt behaviour
+    pc.baud(ulBaudRate);
+    return TRUE;
+}
+
+void xMBPortSerialPolling( void )
+{
+    prvvUARTISR( );
+}
+
+#else
+BOOL
+xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
+{
+    pc.baud(ulBaudRate);
+    simISR.attach_us(&prvvUARTISR, 500);    // Cam - attach prvvUARTISR to a 1mS ticker to simulate serial interrupt behaviour
                                             // 1mS is just short of a character time at 9600 bps, so quick enough to pick
                                             // up status on a character by character basis.
     return TRUE;
 }
+#endif
 
 BOOL
 xMBPortSerialPutByte( CHAR ucByte )
@@ -97,7 +120,7 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
-    * pucByte = pc.getc();
+    *pucByte = pc.getc();
     return TRUE;
 }
 
