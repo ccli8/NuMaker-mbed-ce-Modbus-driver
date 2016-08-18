@@ -27,6 +27,7 @@
  *
  * File: $Id: mbrtu.c,v 1.18 2007/09/12 10:15:56 wolti Exp $
  */
+#include "mbed.h"
 
 /* ----------------------- System includes ----------------------------------*/
 #include "stdlib.h"
@@ -153,7 +154,14 @@ eMBRTUReceive( UCHAR * pucRcvAddress, UCHAR ** pucFrame, USHORT * pusLength )
     eMBErrorCode    eStatus = MB_ENOERR;
 
     ENTER_CRITICAL_SECTION(  );
-    assert( usRcvBufferPos < MB_SER_PDU_SIZE_MAX );
+    //assert( usRcvBufferPos < MB_SER_PDU_SIZE_MAX ); //Wayne's workaround
+    if ( usRcvBufferPos >= MB_SER_PDU_SIZE_MAX )
+    {
+        //printf("usRcvBufferPos < MB_SER_PDU_SIZE_MAX - %d %d \r\n", usRcvBufferPos, MB_SER_PDU_SIZE_MAX );
+        eStatus = MB_EIO;
+        usRcvBufferPos = 0;
+        return eStatus;
+    }
         
     /* Length and CRC check */
     if( ( usRcvBufferPos >= MB_SER_PDU_SIZE_MIN )

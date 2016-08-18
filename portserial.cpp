@@ -37,14 +37,9 @@ static void prvvUARTISR( void );
 
 /* ----------------------- System Variables ---------------------------------*/
 //Serial pc(USBTX, USBRX);            // Cam - mbed USB serial port
-Serial pc(PG_2, PG_1);            // Cam - mbed USB serial port
+Serial pc(PG_2, PG_1);            // Cam - mbed serial port
 
-Ticker simISR;                      // Cam - mbed ticker
-                                    // we don't have the TX buff empty interrupt, so
-                                    // we just interrupt every 1 mSec and read RX & TX
-                                    // status to simulate the proper ISRs.
-
-static BOOL RxEnable, TxEnable;     // Cam - keep a static copy of the RxEnable and TxEnable
+static volatile BOOL RxEnable, TxEnable;     // Cam - keep a static copy of the RxEnable and TxEnable
                                     // status for the simulated ISR (ticker)
 
 
@@ -56,15 +51,11 @@ prvvUARTISR( void )
 {
     if (TxEnable)
         if(pc.writeable())
-        {
             prvvUARTTxReadyISR();
-        }
             
     if (RxEnable)
         if(pc.readable())
-        {
             prvvUARTRxISR();          
-        }           
 }
 
 void
@@ -77,8 +68,6 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
     TxEnable = xTxEnable;
 }
 
-
-#if 1
 /* ----------------------- Start implementation -----------------------------*/
 BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
@@ -91,18 +80,6 @@ void xMBPortSerialPolling( void )
 {
     prvvUARTISR( );
 }
-
-#else
-BOOL
-xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
-{
-    pc.baud(ulBaudRate);
-    simISR.attach_us(&prvvUARTISR, 500);    // Cam - attach prvvUARTISR to a 1mS ticker to simulate serial interrupt behaviour
-                                            // 1mS is just short of a character time at 9600 bps, so quick enough to pick
-                                            // up status on a character by character basis.
-    return TRUE;
-}
-#endif
 
 BOOL
 xMBPortSerialPutByte( CHAR ucByte )
@@ -120,7 +97,7 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
-    *pucByte = pc.getc();
+    * pucByte = pc.getc();
     return TRUE;
 }
 
@@ -142,6 +119,7 @@ static void prvvUARTTxReadyISR( void )
  */
 static void prvvUARTRxISR( void )
 {
+    vMBPortTimersDisable();
     pxMBFrameCBByteReceived(  );
 }
 

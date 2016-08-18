@@ -22,10 +22,11 @@
 /* ----------------------- Modbus includes ----------------------------------*/
 #include "mb.h"
 #include "mbport.h"
+#include "mbed.h"
 
 /* ----------------------- Variables ----------------------------------------*/
-static eMBEventType eQueuedEvent;
-static BOOL         xEventInQueue;
+static volatile eMBEventType eQueuedEvent;
+static volatile BOOL         xEventInQueue;
 
 /* ----------------------- Start implementation -----------------------------*/
 BOOL
@@ -53,6 +54,7 @@ xMBPortEventGet( eMBEventType * eEvent )
         *eEvent = eQueuedEvent;
         xEventInQueue = FALSE;
         xEventHappened = TRUE;
+        //printf("[%s %d] %x\r\n", __func__, __LINE__, *eEvent );    
     }
     return xEventHappened;
 }
