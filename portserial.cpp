@@ -35,7 +35,7 @@ static void prvvUARTTxReadyISR( void );
 static void prvvUARTRxISR( void );
 static void prvvUARTISR( void );
 
-#define DEF_RS485_PORT 1
+//#define DEF_RS485_PORT 1
 /* ----------------------- System Variables ---------------------------------*/
 
 #if defined(DEF_RS485_PORT) // mbed serial port
