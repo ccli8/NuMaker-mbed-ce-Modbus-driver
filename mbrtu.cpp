@@ -155,9 +155,9 @@ eMBRTUReceive( UCHAR * pucRcvAddress, UCHAR ** pucFrame, USHORT * pusLength )
 
     ENTER_CRITICAL_SECTION(  );
     //assert( usRcvBufferPos < MB_SER_PDU_SIZE_MAX ); //Wayne's workaround
-    if ( usRcvBufferPos >= MB_SER_PDU_SIZE_MAX )
+    if ( usRcvBufferPos > MB_SER_PDU_SIZE_MAX )
     {
-        //printf("usRcvBufferPos < MB_SER_PDU_SIZE_MAX - %d %d \r\n", usRcvBufferPos, MB_SER_PDU_SIZE_MAX );
+        printf("usRcvBufferPos < MB_SER_PDU_SIZE_MAX - %d %d \r\n", usRcvBufferPos, MB_SER_PDU_SIZE_MAX );
         eStatus = MB_EIO;
         usRcvBufferPos = 0;
         return eStatus;
@@ -189,6 +189,10 @@ eMBRTUReceive( UCHAR * pucRcvAddress, UCHAR ** pucFrame, USHORT * pusLength )
     }
     else
     {
+        //FIXME: Get CRC error.
+        //The receiving buffer position pointer can't reseet.
+        //printf("CRC error!!\r\n");
+        usRcvBufferPos = 0;
         eStatus = MB_EIO;
     }
 
@@ -241,6 +245,9 @@ xMBRTUReceiveFSM( void )
     BOOL            xTaskNeedSwitch = FALSE;
     UCHAR           ucByte;
 
+    if ( eSndState != STATE_TX_IDLE )
+        printf("assert eSndState == STATE_TX_IDLE\r\n");
+        
     assert( eSndState == STATE_TX_IDLE );
 
     /* Always read the character. */
@@ -299,6 +306,9 @@ xMBRTUTransmitFSM( void )
 {
     BOOL            xNeedPoll = FALSE;
 
+    if ( eRcvState != STATE_RX_IDLE )
+        printf(" assert eRcvState == STATE_RX_IDLE \r\n");
+
     assert( eRcvState == STATE_RX_IDLE );
     switch ( eSndState )
     {
@@ -355,6 +365,8 @@ xMBRTUTimerT35Expired( void )
 
         /* Function called in an illegal state. */
     default:
+        printf(" Function called in an illegal state. \r\n");
+
         assert( ( eRcvState == STATE_RX_INIT ) ||
                 ( eRcvState == STATE_RX_RCV ) || ( eRcvState == STATE_RX_ERROR ) );
     }

@@ -58,6 +58,7 @@
 
 /* ----------------------- Static variables ---------------------------------*/
 
+#include "mbed.h"
 
 static UCHAR    ucMBAddress;
 static eMBMode  eMBCurrentMode;
@@ -313,12 +314,24 @@ eMBPoll( void ) {
 
             case EV_FRAME_RECEIVED:
                 eStatus = peMBFrameReceiveCur( &ucRcvAddress, &ucMBFrame, &usLength );
+                //printf("[EV_FRAME_RECEIVED] usLength=%d \r\n", usLength );
                 if ( eStatus == MB_ENOERR ) {
+                    #if 0
+                    if ( ucMBFrame )
+                    {
+                         printf( "\r\n" );                         
+                         printf( "-->" );
+                         for ( int i=0; i< usLength; i++ )
+                            printf("%02x ", ucMBFrame[i]);
+                         printf( "\r\n" );
+                    }
+                    #endif
                     /* Check if the frame is for us. If not ignore the frame. */
                     if ( ( ucRcvAddress == ucMBAddress ) || ( ucRcvAddress == MB_ADDRESS_BROADCAST ) ) {
                         ( void )xMBPortEventPost( EV_EXECUTE );
-                    }
-                }
+                    } //else
+                       //printf("Drop\r\n");
+                } //else  printf("Error\r\n");
                 break;
 
             case EV_EXECUTE:
@@ -346,6 +359,15 @@ eMBPoll( void ) {
                         ucMBFrame[usLength++] = eException;
                     }
                     eStatus = peMBFrameSendCur( ucMBAddress, ucMBFrame, usLength );
+                    #if 0
+                    if ( ucMBFrame )
+                    {
+                        printf( "\r\n" );                                                 
+                        printf( "<--" );
+                        for ( int i=0; i< usLength; i++ )
+                            printf("%02x ", ucMBFrame[i]);
+                        printf( "\r\n" );
+                    #endif
                 }
                 break;
 

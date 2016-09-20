@@ -35,9 +35,17 @@ static void prvvUARTTxReadyISR( void );
 static void prvvUARTRxISR( void );
 static void prvvUARTISR( void );
 
+//#define DEF_RS485_PORT 1
 /* ----------------------- System Variables ---------------------------------*/
-//Serial pc(USBTX, USBRX);            // Cam - mbed USB serial port
-Serial pc(PG_2, PG_1);            // Cam - mbed serial port
+
+#if defined(DEF_RS485_PORT) // mbed serial port
+#include "nvt_rs485.h"
+// RS485 TX, RX, RTS pins
+NvtRS485  pc(PF_13, PF_14, PF_11);
+#else
+//UART TX, RX
+Serial pc(PG_2, PG_1);
+#endif
 
 static volatile BOOL RxEnable, TxEnable;     // Cam - keep a static copy of the RxEnable and TxEnable
                                     // status for the simulated ISR (ticker)
@@ -49,13 +57,13 @@ static volatile BOOL RxEnable, TxEnable;     // Cam - keep a static copy of the 
 static void
 prvvUARTISR( void )
 {
-    if (TxEnable)
+    if ( TxEnable )
         if(pc.writeable())
             prvvUARTTxReadyISR();
-            
-    if (RxEnable)
+
+    if ( RxEnable )
         if(pc.readable())
-            prvvUARTRxISR();          
+            prvvUARTRxISR();
 }
 
 void
@@ -66,6 +74,8 @@ vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
      */
     RxEnable = xRxEnable;
     TxEnable = xTxEnable;
+    
+    //printf("\r\nRx: %d, TX:%d\r\n", RxEnable, TxEnable);
 }
 
 /* ----------------------- Start implementation -----------------------------*/
@@ -73,6 +83,9 @@ BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
     pc.baud(ulBaudRate);
+#if defined(DEF_RS485_PORT) // mbed serial port
+    pc.set_rs485_mode(PF_11);
+#endif
     return TRUE;
 }
 
@@ -87,6 +100,7 @@ xMBPortSerialPutByte( CHAR ucByte )
     /* Put a byte in the UARTs transmit buffer. This function is called
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
+    //printf("[%02x]", ucByte );
     pc.putc( ucByte);
     return TRUE;
 }
@@ -97,7 +111,8 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
-    * pucByte = pc.getc();
+    *pucByte = pc.getc();
+    //printf("<%02x>", *pucByte );
     return TRUE;
 }
 
