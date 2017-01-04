@@ -39,12 +39,20 @@ static void prvvUARTISR( void );
 /* ----------------------- System Variables ---------------------------------*/
 
 #if defined(DEF_RS485_PORT) // mbed serial port
-#include "nvt_rs485.h"
-// RS485 TX, RX, RTS pins
-NvtRS485  pc(PF_13, PF_14, PF_11);
+    #include "nvt_rs485.h"
+    // RS485 TX, RX, RTS pins
+    #if defined(TARGET_NUMAKER_PFM_NUC472)      // for NUC472 board
+        NvtRS485  pc(PF_13, PF_14, PF_11);
+    #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
+        NvtRS485  pc(PE_8, PE_9, PE_11);
+    #endif
 #else
-//UART TX, RX
-Serial pc(PG_2, PG_1);
+    //UART TX, RX
+    #if defined(TARGET_NUMAKER_PFM_NUC472)  // for NUC472 board
+    Serial pc(PG_2, PG_1);
+    #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
+    Serial pc(PD_1, PD_6);    
+    #endif
 #endif
 
 static volatile BOOL RxEnable, TxEnable;     // Cam - keep a static copy of the RxEnable and TxEnable
@@ -84,7 +92,11 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
 {
     pc.baud(ulBaudRate);
 #if defined(DEF_RS485_PORT) // mbed serial port
+    #if defined(TARGET_NUMAKER_PFM_NUC472)      // for NUC472 board
     pc.set_rs485_mode(PF_11);
+    #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
+    pc.set_rs485_mode(PE_11);
+    #endif    
 #endif
     return TRUE;
 }
