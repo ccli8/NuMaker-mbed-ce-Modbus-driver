@@ -38,7 +38,7 @@ static void prvvUARTISR( void );
 //#define DEF_RS485_PORT 1
 /* ----------------------- System Variables ---------------------------------*/
 
-#if defined(DEF_RS485_PORT) // mbed serial port
+#if defined(MBED_CONF_APP_DEF_RS485_PORT) && (MBED_CONF_APP_DEF_RS485_PORT)// mbed serial port
     #include "nvt_rs485.h"
     // RS485 TX, RX, RTS pins
     #if defined(TARGET_NUMAKER_PFM_NUC472)      // for NUC472 board
@@ -91,7 +91,7 @@ BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
     pc.baud(ulBaudRate);
-#if defined(DEF_RS485_PORT) // mbed serial port
+#if defined(MBED_CONF_APP_DEF_RS485_PORT) && (MBED_CONF_APP_DEF_RS485_PORT) // mbed serial port
     #if defined(TARGET_NUMAKER_PFM_NUC472)      // for NUC472 board
     pc.set_rs485_mode(PF_11);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
