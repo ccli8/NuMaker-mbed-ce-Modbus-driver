@@ -41,10 +41,12 @@ static void prvvUARTISR( void );
 #if defined(MBED_CONF_APP_DEF_RS485_PORT) && (MBED_CONF_APP_DEF_RS485_PORT)// mbed serial port
     #include "nvt_rs485.h"
     // RS485 TX, RX, RTS pins
-    #if defined(TARGET_NUMAKER_PFM_NUC472)      // for NUC472 board
+    #if defined(TARGET_NUMAKER_PFM_NUC472)  // for NUC472 board
         NvtRS485  pc(PF_13, PF_14, PF_11);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
         NvtRS485  pc(PE_8, PE_9, PE_11);
+    #else
+        #error "The demo code can't be executed on this board."
     #endif
 #else
     //UART TX, RX
@@ -52,6 +54,10 @@ static void prvvUARTISR( void );
     Serial pc(PG_2, PG_1);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
     Serial pc(PD_1, PD_6);    
+    #elif defined(TARGET_NUMAKER_PFM_M487)  // for M478 board
+    Serial pc(PC_12, PC_11);
+    #else
+        #error "The demo code can't be executed on this board."    
     #endif
 #endif
 
