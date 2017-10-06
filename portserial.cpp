@@ -35,9 +35,7 @@ static void prvvUARTTxReadyISR( void );
 static void prvvUARTRxISR( void );
 static void prvvUARTISR( void );
 
-//#define DEF_RS485_PORT 1
 /* ----------------------- System Variables ---------------------------------*/
-
 #if defined(MBED_CONF_APP_DEF_RS485_PORT) && (MBED_CONF_APP_DEF_RS485_PORT)// mbed serial port
     #include "nvt_rs485.h"
     // RS485 TX, RX, RTS pins
@@ -45,6 +43,10 @@ static void prvvUARTISR( void );
         NvtRS485  pc(PF_13, PF_14, PF_11);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
         NvtRS485  pc(PE_8, PE_9, PE_11);
+    #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
+        NvtRS485  pc(PA_3, PA_2, PA_0);
+        #warning "Notice: It has no RS485 port on NUMAKER-PFM-M487 board. 
+        #warning "But, you can connect with a RS485 daughter board to PA_3(TX), PA_2(RX) and PA_0(RTS) pin."
     #else
         #error "The demo code can't be executed on this board."
     #endif
@@ -102,7 +104,9 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     pc.set_rs485_mode(PF_11);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
     pc.set_rs485_mode(PE_11);
-    #endif    
+    #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
+    pc.set_rs485_mode(PA_0);    
+    #endif
 #endif
     return TRUE;
 }
