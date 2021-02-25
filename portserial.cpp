@@ -28,7 +28,9 @@
 /* ----------------------- Modbus includes ----------------------------------*/
 #include "mb.h"
 #include "mbport.h"
-
+#if MBED_MAJOR_VERSION >= 6
+#include "MyUnbufferedSerial.h"
+#endif
 
 /* ----------------------- static functions ---------------------------------*/
 static void prvvUARTTxReadyISR( void );
@@ -108,6 +110,20 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     pc.set_rs485_mode(PA_0);    
     #endif
 #endif
+#if 0 //MBED_MAJOR_VERSION >= 6
+	SerialBase::Parity parity;
+	if (eParity == MB_PAR_NONE)
+		parity = SerialBase::None;
+	else if ( eParity == MB_PAR_ODD )
+		parity = SerialBase::Odd;
+	else if ( eParity == MB_PAR_EVEN)
+		parity = SerialBase::Even;
+	pc.format(
+        /* bits */ 8,
+        /* parity */ parity, 
+        /* stop bit */ 1
+		);
+#endif
     return TRUE;
 }
 
@@ -123,7 +139,11 @@ xMBPortSerialPutByte( CHAR ucByte )
      * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
      * called. */
     //printf("[%02x]", ucByte );
+#if MBED_MAJOR_VERSION >= 6
+    pc.write(&ucByte, 1);
+#else
     pc.putc( ucByte);
+#endif
     return TRUE;
 }
 
@@ -133,7 +153,11 @@ xMBPortSerialGetByte( CHAR * pucByte )
     /* Return the byte in the UARTs receive buffer. This function is called
      * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
      */
+#if MBED_MAJOR_VERSION >= 6
+	pc.read(pucByte,1);
+#else
     *pucByte = pc.getc();
+#endif
     //printf("<%02x>", *pucByte );
     return TRUE;
 }
