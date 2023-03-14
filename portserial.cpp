@@ -46,9 +46,13 @@ static void prvvUARTISR( void );
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
         NvtRS485  pc(PE_8, PE_9, PE_11);
     #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
-        NvtRS485  pc(PA_3, PA_2, PA_0);
-        #warning "Notice: It has no RS485 port on NUMAKER-PFM-M487 board. 
-        #warning "But, you can connect with a RS485 daughter board to PA_3(TX), PA_2(RX) and PA_0(RTS) pin."
+        NvtRS485  pc(PB_3, PB_2, PA_0);
+        #warning "Notice: It has no RS485 port on NUMAKER-PFM-M487 board."
+        #warning "But, you can connect with a RS485 daughter board to (D1, D0, D11) PB_3(TX), PB_2(RX) and PA_0(RTS) pin."
+    #elif defined(TARGET_NUMAKER_IOT_M467)  // for M467 board
+        NvtRS485  pc(PB_3, PB_2, PA_0);
+        #warning "Notice: It has no RS485 port on NUMAKER-IOT-M467 board."
+        #warning "But, you can connect with a RS485 daughter board to (D1, D0, D11) PB_3(TX), PB_2(RX) and PA_0(RTS) pin."
     #else
         #error "The demo code can't be executed on this board."
     #endif
@@ -58,7 +62,9 @@ static void prvvUARTISR( void );
     Serial pc(PG_2, PG_1);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
     Serial pc(PD_1, PD_6);    
-    #elif defined(TARGET_NUMAKER_PFM_M487)  // for M478 board
+    #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
+    Serial pc(PC_12, PC_11);
+    #elif defined(TARGET_NUMAKER_IOT_M467)  // for M467 board
     Serial pc(PC_12, PC_11);
     #else
         #error "The demo code can't be executed on this board."    
@@ -107,6 +113,8 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
     pc.set_rs485_mode(PE_11);
     #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
+    pc.set_rs485_mode(PA_0);    
+    #elif defined(TARGET_NUMAKER_IOT_M467)  // for M467 board
     pc.set_rs485_mode(PA_0);    
     #endif
 #endif
