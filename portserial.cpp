@@ -46,13 +46,13 @@ static void prvvUARTISR( void );
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
         NvtRS485  pc(PE_8, PE_9, PE_11);
     #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
-        NvtRS485  pc(PB_3, PB_2, PA_0);
+        NvtRS485  pc(PB_3, PB_2, PB_8);
         #warning "Notice: It has no RS485 port on NUMAKER-PFM-M487 board."
-        #warning "But, you can connect with a RS485 daughter board to (D1, D0, D11) PB_3(TX), PB_2(RX) and PA_0(RTS) pin."
+        #warning "But, you can connect with a RS485 daughter board to (D1, D0, A2) PB_3(TX), PB_2(RX) and PB_8(RTS) pin."
     #elif defined(TARGET_NUMAKER_IOT_M467)  // for M467 board
-        NvtRS485  pc(PB_3, PB_2, PA_0);
+        NvtRS485  pc(PB_3, PB_2, PB_8);
         #warning "Notice: It has no RS485 port on NUMAKER-IOT-M467 board."
-        #warning "But, you can connect with a RS485 daughter board to (D1, D0, D11) PB_3(TX), PB_2(RX) and PA_0(RTS) pin."
+        #warning "But, you can connect with a RS485 daughter board to (D1, D0, A2) PB_3(TX), PB_2(RX) and PB_8(RTS) pin."
     #else
         #error "The demo code can't be executed on this board."
     #endif
@@ -113,9 +113,9 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
     pc.set_rs485_mode(PE_11);
     #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
-    pc.set_rs485_mode(PA_0);    
+    pc.set_rs485_mode(PB_8);    
     #elif defined(TARGET_NUMAKER_IOT_M467)  // for M467 board
-    pc.set_rs485_mode(PA_0);    
+    pc.set_rs485_mode(PB_8);    
     #endif
 #endif
 #if 0 //MBED_MAJOR_VERSION >= 6
