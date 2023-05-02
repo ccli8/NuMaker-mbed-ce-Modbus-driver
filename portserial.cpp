@@ -118,7 +118,7 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
     pc.set_rs485_mode(PB_8);    
     #endif
 #endif
-#if 0 //MBED_MAJOR_VERSION >= 6
+//#if 0 //MBED_MAJOR_VERSION >= 6
 	SerialBase::Parity parity;
 	if (eParity == MB_PAR_NONE)
 		parity = SerialBase::None;
@@ -131,7 +131,7 @@ xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity e
         /* parity */ parity, 
         /* stop bit */ 1
 		);
-#endif
+//#endif
     return TRUE;
 }
 
