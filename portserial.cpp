@@ -45,7 +45,7 @@ static void prvvUARTISR( void );
         NvtRS485  pc(PF_13, PF_14, PF_11);
     #elif defined(TARGET_NUMAKER_PFM_M453)  // for M453 board
         NvtRS485  pc(PE_8, PE_9, PE_11);
-    #elif defined(TARGET_NUMAKER_PFM_M487)  // for M487 board
+    #elif defined(TARGET_NUMAKER_PFM_M487)  || defined(TARGET_NUMAKER_IOT_M487) // for M487 board
         NvtRS485  pc(PB_3, PB_2, PB_8);
         #warning "Notice: It has no RS485 port on NUMAKER-PFM-M487 board."
         #warning "But, you can connect with a RS485 daughter board to (D1, D0, A2) PB_3(TX), PB_2(RX) and PB_8(RTS) pin."
