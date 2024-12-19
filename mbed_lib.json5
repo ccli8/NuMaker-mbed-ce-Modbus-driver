@@ -1,0 +1,13 @@
+{
+    "name": "nu-modbus",
+    "config": {
+        "provide-default-serial": {
+            "help": "Provide default serial port",
+            "value": false
+        },
+        "enable-serial-rs485": {
+            "help": "Enable RS485 mode on providing default serial port",
+            "value": false
+        }
+    }
+}
